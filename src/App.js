@@ -3,10 +3,9 @@ import axios from 'axios';
 
 class App extends React.Component {
   state = {
-    username: '',
-    name: '',
+    user:'',
     followers: [],
-
+    input: ''
   }
 
 
@@ -16,11 +15,7 @@ class App extends React.Component {
       // console.log(resp.data)
       this.setState({
         ...this.state,
-        avatar: resp.data.avatar_url,
-        username: resp.data.login,
-        name: resp.data.name,
-        totalRepos: resp.data.public_repos,
-        totalFollowers: resp.data.followers
+        user: resp.data
       })
     })
     .catch(err => {
@@ -29,74 +24,70 @@ class App extends React.Component {
   }
 
 
-  // componentDidUpdate(){
-  //   axios.get('https://api.github.com/users/moua0061/followers')
+  componentDidUpdate(){
+    
+  }
+
+  handleChange = event => {
+    this.setState({
+      ...this.state,
+      input: event.target.value
+    })
+  }
+
+  handleSubmit = event => {
+    event.preventDefault();
+    axios.get(`https://api.github.com/users/${this.state.input}`)
+    .then(resp => {
+      // console.log(resp)
+      this.setState({
+        ...this.state,
+        user: resp.data
+      })
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+
+  // handleClick = event => {
+  //   event.preventDefault();
+  //   axios.get(`https://api.github.com/users/${this.state.input}`)
   //   .then(resp => {
-  //     this.setState({
-  //       ...this.state,
-  //       followersAvatars: resp.data.avatar_url,
-  //       user: resp.data.login
-  //     })
+  //     // console.log(resp)
   //   })
   //   .catch(err => {
   //     console.log(err)
   //   })
   // }
 
-  handleChange = event => {
-    this.setState({
-      ...this.state,
-      user: event.target.value
-    })
-  }
-
-  handleSubmit = event => {
-    event.preventDefault();
-    axios.get('https://api.github.com/users/${username}')
-    .then(resp => {
-      // console.log(resp)
-    })
-    .catch(err => {
-      console.log(err)
-    })
-  }
-
-  handleClick = event => {
-    event.preventDefault();
-    axios.get(`https://api.github.com/users/${this.state.user}`)
-    .then(resp => {
-      // console.log(resp)
-    })
-    .catch(err => {
-      console.log(err)
-    })
-  }
-
   render() {
-    // console.log(this.state.username)
-    // console.log(this.state.avatar)
-    // console.log(this.state.name)
-    // console.log(this.state.totalRepos)
-    // console.log(this.state.totalFollowers)
+    
+    // console.log(this.state.user)
+
     return(
     
     <div>
       <h1>Github Card</h1>
-      <form>
-        <input onChange={this.handleChange} value={this.state.user} />
+      <form onSubmit={this.handleSubmit}>
+        <input 
+        type="text"
+        onChange={this.handleChange} 
+        value={this.state.input} 
+        />
         <button onClick={this.handleClick}>search</button>
       </form>
 
       <div className='user-container'>
-        <img src='https://avatars.githubusercontent.com/u/82925208?v=4' />
-        <h2>{this.state.username}</h2>
-        <h3>{this.state.name}</h3>
+        <img src={`${this.state.user.avatar_url}`} />
+        <h2>{this.state.user.login}</h2>
+        <h3>{this.state.user.name}</h3>
         <p>
-          Total Repos: {this.state.totalRepos}
+          Total Repos: {this.state.user.public_repos}
         </p>
 
         <p>
-          Total Followers: {this.state.followers}
+          Total Followers: {this.state.user.followers}
         </p>
       </div>
       <div className='followers-container'>
