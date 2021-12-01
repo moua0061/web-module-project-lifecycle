@@ -1,106 +1,118 @@
 import React from 'react';
 import axios from 'axios';
 
+
+import User from './components/User'
+import FollowerList from './components/FollowerList'
+
 class App extends React.Component {
   state = {
-    user:'',
+    user: '',
     followers: [],
-    input: ''
+    input: 'moua0061'
   }
 
-
-  componentDidMount(){
+  componentDidMount() {
     axios.get('https://api.github.com/users/moua0061')
-    .then(resp => {
-      // console.log(resp.data)
-      this.setState({
-        ...this.state,
-        user: resp.data
+      .then(resp => {
+          // console.log(resp) it is working
+          this.setState({
+            ...this.state,
+            user: resp.data
+          })
+          // console.log(this.state)
       })
-    })
-    .catch(err => {
-      console.log(err)
-    })
+      .catch(err=> {
+        console.log('your shit aint working!');
+      });
+
+  //     axios.get('https://api.github.com/users/moua0061/followers')
+  //       .then(resp => {
+  //         // console.log(resp.data)
+  //         this.setState({
+  //           ...this.state,
+  //             followers: resp.data
+  //         })
+  //         // console.log(this.state)
+  //       })
+  //       .catch(err=> {
+  //         console.log('your shit still not working!')
+  //       })
   }
 
-
-  componentDidUpdate(){
-    
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.user !== prevState.user){
+      axios.get(`https://api.github.com/users/${this.state.input}/followers`)
+        .then(res => {
+          this.setState({
+            ...this.state,
+              followers: res.data
+          })
+        })
+        .catch(err=> {
+          console.log('your shit still not working!')
+        })
+        .finally(this.setState({
+          ...this.state,
+          input: ''
+        }))
+    }
   }
+  
 
-  handleChange = event => {
+
+  handelChange = (event) => {
     this.setState({
       ...this.state,
-      input: event.target.value
-    })
+        input: event.target.value
+    });
+    // console.log(event.target.value)
   }
 
-  handleSubmit = event => {
+  handleSubmit = (event) => {
     event.preventDefault();
     axios.get(`https://api.github.com/users/${this.state.input}`)
-    .then(resp => {
-      // console.log(resp)
-      this.setState({
-        ...this.state,
-        user: resp.data
+      .then(resp => {
+        this.setState({
+          ...this.state,
+            user: resp.data
+        })
       })
-    })
-    .catch(err => {
-      console.log(err)
-    })
+      .catch(err=> {
+        console.log('bruh, youre shit not working still...')
+      })
   }
 
-  // handleClick = event => {
-  //   event.preventDefault();
-  //   axios.get(`https://api.github.com/users/${this.state.input}`)
-  //   .then(resp => {
-  //     // console.log(resp)
-  //   })
-  //   .catch(err => {
-  //     console.log(err)
-  //   })
-  // }
-
   render() {
-    
-    // console.log(this.state.user)
+
 
     return(
     
-    <div>
-      <h1>Github Card</h1>
-      <form onSubmit={this.handleSubmit}>
+    <div className='app'>
+      <header>
+        <h1>Github Info</h1>
+      </header>
+      <div className='form-container'>
+        <form onSubmit={this.handleSubmit}>
         <input 
-        type="text"
-        onChange={this.handleChange} 
-        value={this.state.input} 
+        type='text'
+        name='search'
+        placeholder='enter git username'
+        onChange={this.handelChange}
+        value={this.state.input}
         />
-        <button onClick={this.handleClick}>search</button>
-      </form>
-
-      <div className='user-container'>
-        <img src={`${this.state.user.avatar_url}`} />
-        <h2>{this.state.user.login}</h2>
-        <h3>{this.state.user.name}</h3>
-        <p>
-          Total Repos: {this.state.user.public_repos}
-        </p>
-
-        <p>
-          Total Followers: {this.state.user.followers}
-        </p>
+        <button >Search</button>
+        </form>
       </div>
+      
+      <br />
+      
+        <User user={this.state.user} />
+      
       <div className='followers-container'>
-        <h2>Followers:</h2>
-        <img src='https://avatars.githubusercontent.com/u/31264591?v=4' />
-        <p>username1</p>
-        <img src='https://avatars.githubusercontent.com/u/32182282?v=4' />
-        <p>username2</p>
-        <img src='https://avatars.githubusercontent.com/u/43353550?v=4' />
-        <p>username3</p>
+        <FollowerList followers={this.state.followers} />
       </div>
     </div>
-    
     );
   }
 }
