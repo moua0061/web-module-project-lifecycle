@@ -25,19 +25,6 @@ class App extends React.Component {
       .catch(err=> {
         console.log('your shit aint working!');
       });
-
-  //     axios.get('https://api.github.com/users/moua0061/followers')
-  //       .then(resp => {
-  //         // console.log(resp.data)
-  //         this.setState({
-  //           ...this.state,
-  //             followers: resp.data
-  //         })
-  //         // console.log(this.state)
-  //       })
-  //       .catch(err=> {
-  //         console.log('your shit still not working!')
-  //       })
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -50,7 +37,7 @@ class App extends React.Component {
           })
         })
         .catch(err=> {
-          console.log('your shit still not working!')
+          console.log(err)
         })
         .finally(this.setState({
           ...this.state,
